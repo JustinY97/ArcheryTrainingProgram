@@ -30,7 +30,7 @@ def addOutdoorEvent(lst):
     events.update({"Outdoor Events" : lst})
 
 ### MAIN ###
-events = json.load(open('Data/events.json', 'r+'))
+events = json.load(open('ArcheryTracker\Data\events.json', 'r+'))
 while True:
     print("Select Choice")
     print("1. Add Event")
