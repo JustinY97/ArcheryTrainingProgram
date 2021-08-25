@@ -3,21 +3,32 @@
     {
       "Title": "3D Test",
       "Date": "2021-08-18",
-      "Targets": {}
+      "Targets": [
+        {
+          "Target Num": 1,
+          "Score": 10,
+          "Yardage": 27.2
+        },
+        {
+          "Target Num": 2,
+          "Score": 10,
+          "Yardage": 35.0
+        }
+      ]
     }
   ],
   "Indoor Events": [
     {
       "Title": "Indoor Test",
       "Date": "2021-08-18",
-      "Targets": {}
+      "Targets": []
     }
   ],
   "Outdoor Events": [
     {
       "Title": "Outdoor Test",
       "Date": "2021-08-18",
-      "Targets": {}
+      "Targets": []
     }
   ]
 }
