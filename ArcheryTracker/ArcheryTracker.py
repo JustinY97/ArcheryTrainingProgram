@@ -1,123 +1,141 @@
-### Training Tracker for Archery Events ###
-from datetime import date
-import json, os
+import json
+import os
 from time import sleep
+import datetime
 
-targetList = ["Strutting Turkey", "Javelina", "Coyote", "Wild Boar", "Russian Boar", "Howling Wolf", "Auodad", "Brown Bear", "Lynx", "Warthog", "African Leopard", "African Blesbok", "Tapir", "Wolverin", "Chamois", "Black Panther", "Large Alert Deer", "Medium Deer", "Hill Country Whitetail", "Extea Large Deer"]
-
-
-### CLEARS TERMINAL WINDOW ###
-def clear():
-     os.system('cls' if os.name=='nt' else 'clear')
-     return("   ")
-
-def menu():
-    print("Select Choice")
-    print("1. Add Event")
-    print("2. View Event")
-    print("3. Edit Event")
-    print("4. Exit")
-    user = int(input("Select choice...\n"))
-    clear()
-    return user
-
-def editEvent(lst):
-    print("Inside EditEvent Function")
-
-def add3DEvent(lst):
-    title = input("Enter Title of Event: ")
-    newEvent = {"Title" : title, "Date" : str(date.today()), "Targets" : {}}
-    lst.append(newEvent)
-    events.update({"3D Events" : lst})
-
-def add3DTarget(lst):
-    print(lst)
-
-def addIndoorEvent(lst):
-    title = input("Enter Title of Event: ")
-    newEvent = {"Title" : title, "Date" : str(date.today()), "Targets" : {}}
-    lst.append(newEvent)
-    events.update({"Indoor Events" : lst})
-    
-def addOutdoorEvent(lst):
-    title = input("Enter Title of Event: ")
-    newEvent = {"Title" : title, "Date" : str(date.today()), "Targets" : {}}
-    lst.append(newEvent)
-    events.update({"Outdoor Events" : lst})
-
-def editEvent(event):
-    print("Inside Function")
-    sleep(1)
-
-def getEvent(eventTitle):
-    for eventType in events.values():
-        print(eventType)
-
-        
-
-
-    ### MAIN ###
-events = json.load(open('ArcheryTracker/Data/events.json', 'r+'))
-
-while True:
-    print("Select Choice")
-    print("1. Add Event")
-    print("2. View Event")
-    print("3. Edit Event")
-    print("4. Exit")
-    print("5. Test")
-    user = int(input())
-    clear()
-
-    if user == 1:
-        print("Type of Event")
-        print("1. 3D Event")
-        print("2. Indoor Event")
-        print("3. Outdoor Event")
-        event = int(input("Enter Choice...\n"))
-        clear()
-
-        if event == 1:
-            add3DEvent(events.get("3D Events"))
-        elif event == 2:
-            addIndoorEvent(events.get("Indoor Events"))
-        elif event == 3:
-            addOutdoorEvent(events.get("Outdoor Events"))
-
-    ### VIEW A SPECIFIC EVENT ###
-    elif user == 2:
-        temp = printEvents()
-            
-        ### PICK AN EVENT TITLE AND FIND THAT EVENT INFO ###
-
-        ### ASK TO SAVE INFO AND SAVE ###
-
-
-    ### EDIT AN EVENT ###
-    elif user == 3:
-
-        ### PRINT LIST OF EVENTS WITH NUMBERS AND RETURN THE EVENT INFO ###
-        eventList = printEvents()
-        
-        eventID = input("Event Title/Number\n")
-        clear()
-        try:
-            eventID = int(eventID)
-            eventID = eventList[eventID - 1]
-            event = getEvent(eventID)
-        except(Exception):
-            event = getEvent(eventID)
-
-
-
-
-    elif user == 4:
+def exit(filePath, data):
+    saveFlag = input("Save changes? (Y/N): ")
+    if saveFlag.upper() == "Y":
         print("Exiting and Saving...")
-        sleep(1.5)
+        sleep(1)
         clear()
+        json.dump(data, open(filePath, 'r+'), indent=2)
+        os.system("exit")
+
+    else:
+        print("Exiting without saving...")
+        sleep(1)
+        clear()
+        os.system("exit")
+
+def clear():
+    os.system("clear")
+
+def printEvents(data):
+    for events in data.values():
+        for val in events:
+            print(val.get("Title"))
+
+def printTargets(targetList):
+    for target in targetList:
+        print("%d. Score: %d\t Yardage: %.1f" %(target.get("Target Num"), target.get("Score"), target.get("Yardage")))
+
+def Menu():
+    print("1. View an Event")
+    print("2. Edit an Event")
+    print("3. Add a new Event")
+    print("4. Quit")
+    userInput = int(input())
+    clear()
+    return userInput
+
+def addEvent(events):
+    types = []
+    for val in events.keys():
+        print("%d. %s" %(list(events.keys()).index(val) + 1, val))
+        types.append(val)
+
+    eventType = input("Event Type: ")
+    clear()
+    try:
+        eventType = int(eventType)        
+        eventType = types[eventType - 1]
+    except:
+        eventType = str(eventType)
+    
+    for val in events.items():
+        if eventType == val[0]:
+            eventTitle = input(str("Name of new %s: " % (eventType)))
+            newEvent = {"Title": eventTitle, "Date" : str(datetime.date), "Targets" : []}
+            val[1].append(newEvent)
+
+    editEvent(newEvent)
+
+## function to add a target ##
+def addTarget(targetList):
+    ## Target Format {"Target Num" : int, "Score" : int, "Yardage" : float}
+    score = int(input("Score: "))
+    yardage = float(input("Yardage: "))
+    clear()
+    targetList.append({"Target Num" : int(len(targetList) + 1), "Score" : score, "Yardage": yardage})
+    
+
+## Pass in the event Dictionary ##
+def editEvent(event):
+    print("Edit Menu")
+    print("1. Change Title")
+    print("2. Add Target")
+    print("3. Edit Target")
+    print("9. Delete Event")
+    choice = int(input())
+    clear()
+    if choice == 1:
+        event["Title"] = input("New Title: ")
+    elif choice == 2:
+        addTarget(event.get("Targets"))
+    elif choice == 3:
+        printTargets(event.get("Targets"))
+        targetNum = int(input("Enter target number to edit: "))
+        editTarget(list(event.get("Targets"))[targetNum - 1])
+
+def editTarget(target):
+    print("Inside edit Target function")
+    print(target)
+    ## Edit Target Menu ## (Be able to edit Score and Yardage)
+
+
+def viewEvent(event):
+    print("Title: %s\nDate: %s\nTargets\n" %(event.get("Title"), event.get("Date")))
+    for val in event.get("Targets"):
+        print(val)
+
+def getEvent(data):
+    printEvents(data)
+    eventTitle = input("Enter Event Title\n")
+    clear()
+    for events in data.values():
+        for val in events:
+            if val.get("Title") == eventTitle:
+                return val
+
+
+## MAIN ##
+data = json.load(open('/Users/justinyork/Programs/ArcheryTrainingProgram/ArcheryTracker/Data/events.json', 'r+'))
+## Return to main menu ##
+while True:
+    menuChoice = Menu()
+    ## VIEW AN EVENT ##
+    if menuChoice == 1:
+        viewEvent(getEvent(data))
+
+    ## EDIT AN EVENT ##
+    elif menuChoice == 2:
+        editEvent(getEvent(data))
+
+    ## ADD EN EVENT ##    
+    elif menuChoice == 3:
+        addEvent()
+    
+    ## QUIT ##
+    elif menuChoice == 4:
+        exit('/Users/justinyork/Programs/ArcheryTrainingProgram/ArcheryTracker/Data/events.json', data)
         break
 
-        
-
-json.dump(events, open('ArcheryTracker/Data/events.json', 'r+'), indent=2)
-
+    ## Default ##
+    else:
+        print("Invalid Choice")
+    
+    returnToMenu = input("Return to Menu? (Y/N): ").upper()
+    if returnToMenu == "N":
+        exit('/Users/justinyork/Programs/ArcheryTrainingProgram/ArcheryTracker/Data/events.json', data)
+        break
